@@ -3,17 +3,74 @@ Equivalence Partitioning
 1. Function that validates credit card numbers.
    - Valid card numbers: Length between 13 and 16 digits, containing only numeric digits.
 
+   Test case:
+   longitud entre 13 y 16 digitos | Input: 1234567891011 | output: valid
+   
+   Test case:
+   solo caracteres numericos | Input: 123456789101112 | output: valid
+   
+   Test case:
+   longitud entre 13 y 16 digitos y solo caracteres numericos | Input: 123456789101112 | output: valid
+
+
 2. Function that validates dates.
    - Valid years: Between 1900 and 2100.
    - Valid months: Between 1 and 12.
    - Valid days: Between 1 and 31.
 
+   Test case:
+   año entre 1900 y 2100 | Input: año:2000, mes:6, dia:15 | output: valid
+   
+   Test case:
+   mes entre 1 y 12 | Input: año:2000, mes:6, dia:15 | output: valid
+   
+   Test case:
+   dia entre 1 y 31 | Input: año:2000, mes:6, dia:15 | output: valid
+   
+   Test case:
+   año, mes y dia cumplen con las condiciones | Input: año:2000, mes:6, dia:15 | output: valid
+
+
 3. Function that checks the eligibility of a passenger to book a flight.
    - Eligible ages: Between 18 and 65.
    - Frequent flyers: True or False.
 
+   Test case:
+   edad entre 18 y 65 | Input: edad:30, frequentFlyer:true | output: eligible
+   
+   Test case:
+   viajero frecuente true | Input: edad:30, frequentFlyer:true | output: eligible
+   
+   Test case:
+   viajero frecuente false | Input: edad:30, frequentFlyer:false | output: eligible
+   
+   Test case:
+   edad entre 18 y 65 y viajero frecuente true | Input: edad:30, frequentFlyer:true | output: eligible
+   
+   Test case:
+   edad entre 18 y 65 y viajero frecuente false | Input: edad:30, frequentFlyer:false | output: eligible
+
+
 4. Function that validates URLs.
    - Valid URLs: Length less than or equal to 255, starting with "http://" or "https://".
+
+   Test case:
+   longitud menor o igual a 255 | Input: http://pruebas.com | output: valid
+   
+   Test case:
+   empieza con http:// | Input: http://pruebitas.com | output: valid
+   
+   Test case:
+   empieza con https:// | Input: https://prueba.com | output: valid
+   
+   Test case:
+   URL con caracteres especiales | Input: https://pruebas.com/path?param=value&otro=123 | output: valid
+   
+   Test case:
+   longitud menor o igual a 255 y empieza con http:// | Input: http://prueba.mx | output: valid
+   
+   Test case:
+   longitud menor o igual a 255 y empieza con https:// | Input: https://prubas.com | output: valid
 
 
 Boundary Value Analysis
@@ -26,6 +83,22 @@ Boundary Value Analysis
    - If the income is greater than $60,000 and the credit score is above 750, the person is eligible for a premium loan.
    - If the income is greater than $60,000 and the credit score is between 700 and 750 (inclusive), the person is eligible for a standard loan.
 
+   Test case:
+   ingreso en limite inferior $30,000 | Input: income:30000, creditScore:701 | output: standard loan
+   
+   Test case:
+   ingreso en limite superior $60,000 | Input: income:60000, creditScore:701 | output: standard loan
+   
+   Test case:
+   credit score en limite inferior 700 | Input: income:45000, creditScore:700 | output: secured loan
+   
+   Test case:
+   credit score en limite superior 750 | Input: income:70000, creditScore:750 | output: standard loan
+   
+   Test case:
+   credit score justo encima de limite superior 751 | Input: income:70000, creditScore:751 | output: premium loan
+
+
 2. Function that determines the category of a product in an e-commerce system based on its price.
    The product categories and pricing rules are as follows:
    - Category A: Products priced between $10 and $50 (inclusive).
@@ -33,11 +106,57 @@ Boundary Value Analysis
    - Category C: Products priced between $101 and $200 (inclusive).
    - Category D: Products priced above $200.
 
+   Test case:
+   precio en limite inferior de categoria A ($10) | Input: price:10 | output: Category A
+   
+   Test case:
+   precio en limite superior de categoria A ($50) | Input: price:50 | output: Category A
+   
+   Test case:
+   precio en limite inferior de categoria B ($51) | Input: price:51 | output: Category B
+   
+   Test case:
+   precio en limite superior de categoria B ($100) | Input: price:100 | output: Category B
+   
+   Test case:
+   precio en limite inferior de categoria C ($101) | Input: price:101 | output: Category C
+   
+   Test case:
+   precio en limite superior de categoria C ($200) | Input: price:200 | output: Category C
+   
+   Test case:
+   precio en limite inferior de categoria D ($201) | Input: price:201 | output: Category D
+
+
 3. Function that calculates the cost of shipping for packages based on their weight and dimensions.
    The shipping cost rules are as follows:
    - If the weight of the package is less than or equal to 1 kg and the dimensions (length, width, and height) are each less than or equal to 10 cm, the cost is $5.
    - If the weight is between 1 and 5 kg (inclusive) and the dimensions are each between 11 and 30 cm (inclusive), the cost is $10.
    - If the weight is greater than 5 kg or any of the dimensions is greater than 30 cm, the cost is $20.
+
+   Test case:
+   peso en limite superior de primera condicion (1kg) | Input: weight:1, dimensions:10 | output: $5
+   
+   Test case:
+   peso justo encima de limite superior de primera condicion (1.1kg) | Input: weight:1.1, dimensions:10 | output: $20
+   
+   Test case:
+   dimensiones en limite superior de primera condicion (10cm) | Input: weight:1, dimensions:10 | output: $5
+   
+   Test case:
+   dimensiones justo encima de limite superior de primera condicion (10.1cm) | Input: weight:1, dimensions:10.1 | output: $20
+   
+   Test case:
+   peso en limite superior de segunda condicion (5kg) | Input: weight:5, dimensions:30 | output: $10
+   
+   Test case:
+   peso justo encima de limite superior de segunda condicion (5.1kg) | Input: weight:5.1, dimensions:30 | output: $20
+   
+   Test case:
+   dimensiones en limite superior de segunda condicion (30cm) | Input: weight:5, dimensions:30 | output: $10
+   
+   Test case:
+   dimensiones justo encima de limite superior de segunda condicion (30.1cm) | Input: weight:5, dimensions:30.1 | output: $20
 
 
 Decision Table
@@ -48,8 +167,57 @@ Decision Table
    - Weather recommendation "Low temperature. Don't forget your jacket!" for temperature < 0 and any humidity.
    - No weather recommendation for any other temperature and humidity combination.
 
+   Condiciones / Reglas         | Regla 1 | Regla 2 | Regla 3 | Regla 4
+   ---------------------        | ------- | ------- | ------- | -------
+   Temperatura > 30             | Si      | Si      | No      | No
+   Temperatura < 0              | No      | No      | Si      | Si
+   Humedad > 70                 | Si      | No      | Si      | No
+   ---------------------        | ------- | ------- | ------- | -------
+   "High temperature and humidity. Stay hydrated!" | X |   |   |  
+   "Low temperature. Don't forget your jacket!" |   |   | X | X
+   No recommendation            |   | X |   |  
+
+   Test case:
+   temperatura > 30 y humedad > 70 | Input: temperature:35, humidity:80 | output: High temperature and humidity. Stay hydrated!
+   
+   Test case:
+   temperatura > 30 y humedad <= 70 | Input: temperature:35, humidity:60 | output: No recommendation
+   
+   Test case:
+   temperatura < 0 y humedad > 70 | Input: temperature:-5, humidity:80 | output: Low temperature. Don't forget your jacket!
+   
+   Test case:
+   temperatura < 0 y humedad <= 70 | Input: temperature:-5, humidity:50 | output: Low temperature. Don't forget your jacket!
+
+
 2. Create the decision table for a system that authenticates users based on their username and password.
    The rules are:
    - Returns "Admin" for username "admin" and password "admin123".
    - Returns "User" for any other username with at least 5 characters and password with at least 8 characters.
    - Returns "Invalid" if the username or password lenghts are not met.
+
+   Condiciones / Reglas         | Regla 1 | Regla 2 | Regla 3 | Regla 4 | Regla 5
+   ---------------------        | ------- | ------- | ------- | ------- | -------
+   Username = "admin"           | Si      | No      | No      | No      | No
+   Password = "admin123"        | Si      | -       | -       | -       | -
+   Username longitud >= 5       | -       | Si      | No      | Si      | No
+   Password longitud >= 8       | -       | Si      | Si      | No      | No
+   ---------------------        | ------- | ------- | ------- | ------- | -------
+   "Admin"                      | X       |         |         |         |
+   "User"                       |         | X       |         |         |
+   "Invalid"                    |         |         | X       | X       | X
+
+   Test case:
+   username "admin" y password "admin123" | Input: username:admin, password:admin123 | output: Admin
+   
+   Test case:
+   username diferente de admin con longitud >=5 y password >=8 | Input: username:usuario1, password:password123 | output: User
+   
+   Test case:
+   username longitud <5 y password >=8 | Input: username:user, password:password123 | output: Invalid
+   
+   Test case:
+   username longitud >=5 y password <8 | Input: username:usuario1, password:pass | output: Invalid
+   
+   Test case:
+   username longitud <5 y password <8 | Input: username:usr, password:pwd | output: Invalid
