@@ -525,5 +525,295 @@ class TestWhiteBoxExercises(unittest.TestCase):
             "No Specific Advisory"
         )
 
+# ------ Ejercicio 22 ------
+# verificamos el funcionamiento de la maquina expendedora con estados "Ready" y "Dispensing"
+
+class TestVendingMachine(unittest.TestCase):
+    """Pruebas unitarias para el ejercicio 22 - Vending Machine"""
+
+    def setUp(self):
+        """Configurar una maquina expendedora nueva antes de cada prueba"""
+        self.vm = wb.VendingMachine()
+
+    def test_initial_state_ready(self):
+        """Verificar que el estado inicial es 'Ready'"""
+        self.assertEqual(self.vm.state, "Ready")
+
+    def test_insert_coin_when_ready(self):
+        """Verificar que insertar moneda en estado Ready cambia a Dispensing"""
+        result = self.vm.insert_coin()
+        self.assertEqual(result, "Coin Inserted. Select your drink.")
+        self.assertEqual(self.vm.state, "Dispensing")
+
+    def test_insert_coin_when_dispensing(self):
+        """Verificar que insertar moneda en estado Dispensing es invalido"""
+        self.vm.insert_coin()  # Cambiar a Dispensing
+        result = self.vm.insert_coin()
+        self.assertEqual(result, "Invalid operation in current state.")
+        self.assertEqual(self.vm.state, "Dispensing")  # Estado no cambia
+
+    def test_select_drink_when_dispensing(self):
+        """Verificar que seleccionar bebida en estado Dispensing cambia a Ready"""
+        self.vm.insert_coin()  # Cambiar a Dispensing
+        result = self.vm.select_drink()
+        self.assertEqual(result, "Drink Dispensed. Thank you!")
+        self.assertEqual(self.vm.state, "Ready")
+
+    def test_select_drink_when_ready(self):
+        """Verificar que seleccionar bebida en estado Ready es invalido"""
+        result = self.vm.select_drink()
+        self.assertEqual(result, "Invalid operation in current state.")
+        self.assertEqual(self.vm.state, "Ready")  # Estado no cambia
+
+    def test_full_cycle(self):
+        """Verificar el ciclo completo de operacion: insertar moneda y seleccionar bebida"""
+        result1 = self.vm.insert_coin()
+        self.assertEqual(result1, "Coin Inserted. Select your drink.")
+        self.assertEqual(self.vm.state, "Dispensing")
+
+        result2 = self.vm.select_drink()
+        self.assertEqual(result2, "Drink Dispensed. Thank you!")
+        self.assertEqual(self.vm.state, "Ready")
+
+
+# ------ Ejercicio 23 ------
+# Verificamos que el funcionamiento del semaforo con estados "Red", "Green", "Yellow"
+
+class TestTrafficLight(unittest.TestCase):
+    """Pruebas unitarias para el ejercicio 23 - Traffic Light"""
+
+    def setUp(self):
+        """Configurar un semaforo nuevo antes de cada prueba"""
+        self.tl = wb.TrafficLight()
+
+    def test_initial_state_red(self):
+        """Verificar que el estado inicial es 'Red'"""
+        self.assertEqual(self.tl.get_current_state(), "Red")
+
+    def test_change_from_red_to_green(self):
+        """Verificar que desde Red cambia a Green"""
+        self.tl.change_state()
+        self.assertEqual(self.tl.get_current_state(), "Green")
+
+    def test_change_from_green_to_yellow(self):
+        """Verificar que desde Green cambia a Yellow"""
+        self.tl.change_state()  # Red -> Green
+        self.tl.change_state()  # Green -> Yellow
+        self.assertEqual(self.tl.get_current_state(), "Yellow")
+
+    def test_change_from_yellow_to_red(self):
+        """Verificar que desde Yellow cambia a Red"""
+        self.tl.change_state()  # Red -> Green
+        self.tl.change_state()  # Green -> Yellow
+        self.tl.change_state()  # Yellow -> Red
+        self.assertEqual(self.tl.get_current_state(), "Red")
+
+    def test_full_cycle(self):
+        """Verificar el ciclo completo: Red -> Green -> Yellow -> Red"""
+        states = []
+        for _ in range(4):
+            states.append(self.tl.get_current_state())
+            self.tl.change_state()
+
+        # Verificar la secuencia completa
+        self.assertEqual(states, ["Red", "Green", "Yellow", "Red"])
+
+
+# ------ Ejercicio 24 ------
+# Verificar el sistema de autenticacion con estados "Logged Out" y "Logged In"
+
+class TestUserAuthentication(unittest.TestCase):
+    """Pruebas unitarias para el ejercicio 24 - User Authentication"""
+
+    def setUp(self):
+        """Configurar un sistema de autenticacion nuevo antes de cada prueba"""
+        self.auth = wb.UserAuthentication()
+
+    def test_initial_state_logged_out(self):
+        """Verificar que el estado inicial es 'Logged Out'"""
+        self.assertEqual(self.auth.state, "Logged Out")
+
+    def test_login_when_logged_out(self):
+        """Verificar que login desde estado Logged Out es exitoso"""
+        result = self.auth.login()
+        self.assertEqual(result, "Login successful")
+        self.assertEqual(self.auth.state, "Logged In")
+
+    def test_login_when_logged_in(self):
+        """Verificar que login desde estado Logged In es invalido"""
+        self.auth.login()  # Cambiar a Logged In
+        result = self.auth.login()
+        self.assertEqual(result, "Invalid operation in current state")
+        self.assertEqual(self.auth.state, "Logged In")  # Estado no cambia
+
+    def test_logout_when_logged_in(self):
+        """Verificar que logout desde estado Logged In es exitoso"""
+        self.auth.login()  # Cambiar a Logged In
+        result = self.auth.logout()
+        self.assertEqual(result, "Logout successful")
+        self.assertEqual(self.auth.state, "Logged Out")
+
+    def test_logout_when_logged_out(self):
+        """Verificar que logout desde estado Logged Out es invalido"""
+        result = self.auth.logout()
+        self.assertEqual(result, "Invalid operation in current state")
+        self.assertEqual(self.auth.state, "Logged Out")  # Estado no cambia
+
+    def test_full_cycle(self):
+        """Verificar el ciclo completo: login y logout"""
+        result1 = self.auth.login()
+        self.assertEqual(result1, "Login successful")
+        self.assertEqual(self.auth.state, "Logged In")
+
+        result2 = self.auth.logout()
+        self.assertEqual(result2, "Logout successful")
+        self.assertEqual(self.auth.state, "Logged Out")
+
+
+# ------ Ejercicio 25 ------
+# comprobamos el sistema de edicion de documentos con estados "Editing" y "Saved"
+
+class TestDocumentEditingSystem(unittest.TestCase):
+    """Pruebas unitarias para el ejercicio 25 - Document Editing System"""
+
+    def setUp(self):
+        """Configurar un sistema de edicion nuevo antes de cada prueba"""
+        self.doc = wb.DocumentEditingSystem()
+
+    def test_initial_state_editing(self):
+        """Verificar que el estado inicial es 'Editing'"""
+        self.assertEqual(self.doc.state, "Editing")
+
+    def test_save_when_editing(self):
+        """Verificar que guardar desde estado Editing es exitoso"""
+        result = self.doc.save_document()
+        self.assertEqual(result, "Document saved successfully")
+        self.assertEqual(self.doc.state, "Saved")
+
+    def test_save_when_saved(self):
+        """Verificar que guardar desde estado Saved es invalido"""
+        self.doc.save_document()  # Cambiar a Saved
+        result = self.doc.save_document()
+        self.assertEqual(result, "Invalid operation in current state")
+        self.assertEqual(self.doc.state, "Saved")  # Estado no cambia
+
+    def test_edit_when_saved(self):
+        """Verificar que editar desde estado Saved es exitoso"""
+        self.doc.save_document()  # Cambiar a Saved
+        result = self.doc.edit_document()
+        self.assertEqual(result, "Editing resumed")
+        self.assertEqual(self.doc.state, "Editing")
+
+    def test_edit_when_editing(self):
+        """Verificar que editar desde estado Editing es invalido"""
+        result = self.doc.edit_document()
+        self.assertEqual(result, "Invalid operation in current state")
+        self.assertEqual(self.doc.state, "Editing")  # Estado no cambia
+
+    def test_full_cycle(self):
+        """Verificar el ciclo completo: guardar y editar"""
+        result1 = self.doc.save_document()
+        self.assertEqual(result1, "Document saved successfully")
+        self.assertEqual(self.doc.state, "Saved")
+
+        result2 = self.doc.edit_document()
+        self.assertEqual(result2, "Editing resumed")
+        self.assertEqual(self.doc.state, "Editing")
+
+
+# ------ Ejercicio 26 ------
+# comprobamos el sistema de ascensor con estados "Idle", "Moving Up", "Moving Down"
+
+class TestElevatorSystem(unittest.TestCase):
+    """Pruebas unitarias para el ejercicio 26 - Elevator System"""
+
+    def setUp(self):
+        """Configurar un sistema de ascensor nuevo antes de cada prueba"""
+        self.elevator = wb.ElevatorSystem()
+
+    def test_initial_state_idle(self):
+        """Verificar que el estado inicial es 'Idle'"""
+        self.assertEqual(self.elevator.state, "Idle")
+
+    def test_move_up_when_idle(self):
+        """Verificar que mover arriba desde estado Idle es exitoso"""
+        result = self.elevator.move_up()
+        self.assertEqual(result, "Elevator moving up")
+        self.assertEqual(self.elevator.state, "Moving Up")
+
+    def test_move_up_when_moving_up(self):
+        """Verificar que mover arriba desde estado Moving Up es invalido"""
+        self.elevator.move_up()  # Cambiar a Moving Up
+        result = self.elevator.move_up()
+        self.assertEqual(result, "Invalid operation in current state")
+        self.assertEqual(self.elevator.state, "Moving Up")  # Estado no cambia
+
+    def test_move_up_when_moving_down(self):
+        """Verificar que mover arriba desde estado Moving Down es invalido"""
+        self.elevator.move_down()  # Cambiar a Moving Down
+        result = self.elevator.move_up()
+        self.assertEqual(result, "Invalid operation in current state")
+        self.assertEqual(self.elevator.state, "Moving Down")  # Estado no cambia
+
+    def test_move_down_when_idle(self):
+        """Verificar que mover abajo desde estado Idle es exitoso"""
+        result = self.elevator.move_down()
+        self.assertEqual(result, "Elevator moving down")
+        self.assertEqual(self.elevator.state, "Moving Down")
+
+    def test_move_down_when_moving_down(self):
+        """Verificar que mover abajo desde estado Moving Down es invalido"""
+        self.elevator.move_down()  # Cambiar a Moving Down
+        result = self.elevator.move_down()
+        self.assertEqual(result, "Invalid operation in current state")
+        self.assertEqual(self.elevator.state, "Moving Down")  # Estado no cambia
+
+    def test_move_down_when_moving_up(self):
+        """Verificar que mover abajo desde estado Moving Up es invalido"""
+        self.elevator.move_up()  # Cambiar a Moving Up
+        result = self.elevator.move_down()
+        self.assertEqual(result, "Invalid operation in current state")
+        self.assertEqual(self.elevator.state, "Moving Up")  # Estado no cambia
+
+    def test_stop_when_moving_up(self):
+        """Verificar que detener desde estado Moving Up es exitoso"""
+        self.elevator.move_up()  # Cambiar a Moving Up
+        result = self.elevator.stop()
+        self.assertEqual(result, "Elevator stopped")
+        self.assertEqual(self.elevator.state, "Idle")
+
+    def test_stop_when_moving_down(self):
+        """Verificar que detener desde estado Moving Down es exitoso"""
+        self.elevator.move_down()  # Cambiar a Moving Down
+        result = self.elevator.stop()
+        self.assertEqual(result, "Elevator stopped")
+        self.assertEqual(self.elevator.state, "Idle")
+
+    def test_stop_when_idle(self):
+        """Verificar que detener desde estado Idle es invalido"""
+        result = self.elevator.stop()
+        self.assertEqual(result, "Invalid operation in current state")
+        self.assertEqual(self.elevator.state, "Idle")  # Estado no cambia
+
+    def test_full_cycle_up(self):
+        """Verificar el ciclo completo: idle -> moving up -> stop"""
+        result1 = self.elevator.move_up()
+        self.assertEqual(result1, "Elevator moving up")
+        self.assertEqual(self.elevator.state, "Moving Up")
+
+        result2 = self.elevator.stop()
+        self.assertEqual(result2, "Elevator stopped")
+        self.assertEqual(self.elevator.state, "Idle")
+
+    def test_full_cycle_down(self):
+        """Verificar el ciclo completo: idle -> moving down -> stop"""
+        result1 = self.elevator.move_down()
+        self.assertEqual(result1, "Elevator moving down")
+        self.assertEqual(self.elevator.state, "Moving Down")
+
+        result2 = self.elevator.stop()
+        self.assertEqual(result2, "Elevator stopped")
+        self.assertEqual(self.elevator.state, "Idle")
+
 if __name__ == '__main__':
     unittest.main()
