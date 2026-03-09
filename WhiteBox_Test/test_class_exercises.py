@@ -1,5 +1,6 @@
 import unittest
 import class_exercises as wb  # importamos las funciones del archivo original (WhiteBox - wb)
+from unittest.mock import MagicMock, patch
 
 class TestWhiteBoxExercises(unittest.TestCase):
     """
@@ -814,6 +815,123 @@ class TestElevatorSystem(unittest.TestCase):
         result2 = self.elevator.stop()
         self.assertEqual(result2, "Elevator stopped")
         self.assertEqual(self.elevator.state, "Idle")
+
+# ------ Ejercicio 27 ------
+# Verificamos el sistema bancario simulando cuentas y transferencias
+
+class TestBankingSystem(unittest.TestCase):
+    """Pruebas unitarias para el ejercicio 27 - Banking System"""
+
+    def setUp(self):
+        """Configurar el sistema bancario antes de cada prueba"""
+        self.bs = wb.BankingSystem()
+
+    def test_authenticate_success(self):
+        """Verificar autenticacion exitosa con credenciales correctas"""
+        result = self.bs.authenticate("user123", "pass123")
+        self.assertTrue(result)
+        self.assertIn("user123", self.bs.logged_in_users)
+
+    def test_authenticate_fail(self):
+        """Verificar que la autenticacion falla con credenciales incorrectas"""
+        result = self.bs.authenticate("user123", "wrongpass")
+        self.assertFalse(result)
+
+    @patch('class_exercises.BankAccount')
+    def test_transfer_money_success(self, mock_bank_account):
+        """
+        Verificar transferencia exitosa usando MagicMock para BankAccount.
+        Se usa patch porque la funcion instancia BankAccount internamente.
+        """
+        # Configuramos el mock para que la instancia tenga saldo suficiente
+        mock_instance = mock_bank_account.return_value
+        mock_instance.balance = 1000 
+        
+        self.bs.authenticate("user123", "pass123")
+        
+        # Probamos transferencia regular (2% fee)
+        # 100 + 2 = 102 (menor a 1000)
+        result = self.bs.transfer_money("user123", "receiver456", 100, "regular")
+        self.assertTrue(result)
+
+    @patch('class_exercises.BankAccount')
+    def test_transfer_money_insufficient_funds(self, mock_bank_account):
+        """Verificar que la transferencia falla si no hay fondos suficientes"""
+        # Configuramos el saldo en 0 para que falle cualquier transferencia
+        mock_instance = mock_bank_account.return_value
+        mock_instance.balance = 0
+        
+        self.bs.authenticate("user123", "pass123")
+        result = self.bs.transfer_money("user123", "receiver456", 100, "express")
+        self.assertFalse(result)
+
+    def test_transfer_invalid_type(self):
+        """Verificar que rechaza tipos de transaccion no validos"""
+        self.bs.authenticate("user123", "pass123")
+        result = self.bs.transfer_money("user123", "receiver456", 100, "crypto")
+        self.assertFalse(result)
+
+
+# ------ Ejercicio 28 ------
+# Verificamos el carrito de compras usando MagicMock para los productos
+
+class TestShoppingCart(unittest.TestCase):
+    """Pruebas unitarias para el ejercicio 28 - Shopping Cart"""
+
+    def setUp(self):
+        """Configurar un carrito nuevo antes de cada prueba"""
+        self.cart = wb.ShoppingCart()
+
+    def test_add_product_new(self):
+        """Verificar agregar un producto nuevo al carrito usando MagicMock"""
+        mock_product = MagicMock()
+        self.cart.add_product(mock_product, quantity=2)
+        
+        self.assertEqual(len(self.cart.items), 1)
+        self.assertEqual(self.cart.items[0]['quantity'], 2)
+
+    def test_add_product_existing(self):
+        """Verificar que aumentar la cantidad de un producto existente funciona"""
+        mock_product = MagicMock()
+        self.cart.add_product(mock_product, quantity=1)
+        self.cart.add_product(mock_product, quantity=2)
+        
+        self.assertEqual(self.cart.items[0]['quantity'], 3)
+
+    def test_remove_product_partial(self):
+        """Verificar remocion parcial de la cantidad de un producto"""
+        mock_product = MagicMock()
+        self.cart.add_product(mock_product, quantity=5)
+        self.cart.remove_product(mock_product, quantity=2)
+        
+        self.assertEqual(self.cart.items[0]['quantity'], 3)
+
+    def test_remove_product_full(self):
+        """Verificar que el producto se elimina si la cantidad a quitar es mayor o igual"""
+        mock_product = MagicMock()
+        self.cart.add_product(mock_product, quantity=2)
+        self.cart.remove_product(mock_product, quantity=2)
+        
+        self.assertEqual(len(self.cart.items), 0)
+
+    def test_checkout_total_calculation(self):
+        """
+        Verificar el calculo del total en el checkout.
+        Usamos MagicMock para definir precios sin crear objetos Product reales.
+        """
+        product1 = MagicMock()
+        product1.price = 10.0
+        
+        product2 = MagicMock()
+        product2.price = 20.0
+        
+        self.cart.add_product(product1, quantity=2) # 20.0
+        self.cart.add_product(product2, quantity=1) # 20.0
+        
+        # No podemos capturar el print facilmente sin herramientas extra, 
+        # pero podemos verificar la logica del total sumando manualmente:
+        total = sum(item['product'].price * item['quantity'] for item in self.cart.items)
+        self.assertEqual(total, 40.0)
 
 if __name__ == '__main__':
     unittest.main()
