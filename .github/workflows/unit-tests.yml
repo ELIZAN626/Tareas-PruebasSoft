@@ -13,6 +13,7 @@ jobs:
       - name: Install Python dependencies
         run: python -m pip install coverage requests
       - name: Run tests with coverage
-        run: coverage run --branch -m unittest discover
+        run: coverage run --branch -m unittest discover -s WhiteBox_Test -p "test_*.py"
       - name: Check code coverage
-        run: coverage report --fail-under=37 --omit=/usr/lib/python3/*,*/students/*,*/test_*
+        run: |
+          python -m coverage report -m --fail-under=37 --omit="*/test_*"
